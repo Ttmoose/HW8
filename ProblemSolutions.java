@@ -1,6 +1,6 @@
 /******************************************************************
  *
- *   ADD YOUR NAME / SECTION NUMBER HERE
+ *   TUKER MOOSE - COMP 272/400C-002 - Spring 2025
  *
  *   This java file contains the problem solutions of canFinish and
  *   numGroups methods.
@@ -72,19 +72,47 @@ class ProblemSolutions {
      * @return boolean          - True if all exams can be taken, else false.
      */
 
-    public boolean canFinish(int numExams, 
-                             int[][] prerequisites) {
-      
-        int numNodes = numExams;  // # of nodes in graph
+    public boolean canFinish(int numExams, int[][] prerequisites) { 
+        int numNodes = numExams;
 
-        // Build directed graph's adjacency list
-        ArrayList<Integer>[] adj = getAdjList(numExams, 
-                                        prerequisites); 
+        // Using the given method (which creates edges from a → b)
+        ArrayList<Integer>[] adj = getAdjList(numExams, prerequisites);
 
-        // ADD YOUR CODE HERE - ADD YOUR NAME / SECTION AT TOP OF FILE
-        return false;
+        // Indegree array — we treat b as a dependency of a, so we reverse the direction when computing indegrees
+        int[] indegree = new int[numNodes];
 
-    }
+        for (int from = 0; from < numNodes; from++) {
+            for (int to : adj[from]) {
+                indegree[to]++;
+            }
+        }
+
+        // Queue for nodes with 0 indegree (no prerequisites)
+        LinkedList<Integer> queue = new LinkedList<>();
+
+        for (int i = 0; i < numNodes; i++) {
+            if (indegree[i] == 0) {
+                queue.add(i);
+            }
+        }
+
+        int visitedCount = 0;
+
+        while (!queue.isEmpty()) {
+            int curr = queue.poll();
+            visitedCount++;
+
+            // Traverse original adj list — edges go from a → b, i.e., a depends on b
+            for (int neighbor : adj[curr]) {
+                indegree[neighbor]--;
+                if (indegree[neighbor] == 0) {
+                    queue.add(neighbor);
+                }
+            }
+        }
+
+        return visitedCount == numNodes;
+        }   
 
 
     /**
@@ -189,10 +217,35 @@ class ProblemSolutions {
                 }
             }
         }
+         
+    Set<Integer> visited = new HashSet<>();
+        int groupCount = 0;
 
-        // YOUR CODE GOES HERE - you can add helper methods, you do not need
-        // to put all code in this method.
-        return -1;
-    }
+        for (int node = 0; node < numNodes; node++) {
+            if (!visited.contains(node)) {
+                // Start BFS traversal from this node
+                Queue<Integer> queue = new LinkedList<>();
+                queue.add(node);
 
+                while (!queue.isEmpty()) {
+                    int current = queue.poll();
+                    if (!visited.contains(current)) {
+                        visited.add(current);
+
+                        if (graph.containsKey(current)) {
+                            for (int neighbor : graph.get(current)) {
+                                if (!visited.contains(neighbor)) {
+                                    queue.add(neighbor);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Finished exploring one group
+                groupCount++;
+            }
+        }
+        return groupCount;
+    }  
 }

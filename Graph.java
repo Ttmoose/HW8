@@ -1,6 +1,6 @@
 /******************************************************************
  *
- *   YOUR NAME / SECTION NUMBER
+ *   TUKER MOOSE - COMP 272/400C-002 - Spring 2025
  *
  *   Note, additional comments provided throughout this source code
  *   is for educational purposes
@@ -101,10 +101,22 @@ public class Graph {
    * and/or more than one root vertex, then return -1.
    * 
    */
-  
-  public int findRoot() {
-
-    // ADD YOUR CODE HERE - DO NOT FORGET TO ADD YOUR NAME/SECTION AT TOP OF FILE
-    return -1;
-  } 
+    public int findRoot() {
+     int[] incoming = new int[numVertices];
+      for (int i = 0; i < numVertices; i++) {
+        for (int dest : adjListArr[i]) {
+          incoming[dest]++;
+        }
+      }
+      int rootIndex = -1;
+      for (int i = 0; i < numVertices; i++) {
+        if (incoming[i] == 0) {
+          if (rootIndex != -1) {
+            return -1; // More than one root vertex
+          }
+          rootIndex = i;
+        }
+      }
+      return rootIndex != -1 ? vertexValues.get(rootIndex) : -1;
+    }
 }
